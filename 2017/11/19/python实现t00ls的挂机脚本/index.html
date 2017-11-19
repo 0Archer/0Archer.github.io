@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="python编写t00ls挂机脚本"/>
+
+
+
+
+  <meta name="keywords" content="python, 0Archer" />
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="0Archer">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.6.0" />
+
+
+
+<link rel="canonical" href="https://0archer.github.io/2017/11/19/python实现t00ls的挂机脚本/"/>
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6.0" />
+
+
+
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+    <title> python编写t00ls挂机脚本 - 0Archer </title>
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">0Archer</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags/index.html">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">0Archer</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags/index.html">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          python编写t00ls挂机脚本
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-11-19
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        <p>python 实现简单的挂机功能<br><a id="more"></a></p>
+<p>1，t00ls的积分中有一项是登录时间×2，对于懒得回复别人的我来说只能靠登录时间<br>来增加自己的积分了。。<br><img src="/img/20171120/11.png" alt="11"><br>找到登录界面看了一下，登录判断是根据访问的时间去判断的，没隔一段时间访问一次<br>的话就可以达到一直在线的功能。<br><img src="/img/20171120/12.png" alt="12"><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="comment">#coding:utf-8</span></span><br><span class="line"></span><br><span class="line">url=<span class="string">"https://www.t00ls.net/space-uid-11747.html"</span> <span class="comment">#个人主页的地址用来匹配下面的在线时间</span></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">"User-Agent"</span>: <span class="string">"Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:57.0)"</span>,</span><br><span class="line">    <span class="string">"Cookie"</span>:<span class="string">"自己的cookie"</span>    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">    html=requests.get(url,headers=headers).text</span><br><span class="line">    <span class="comment">#print html</span></span><br><span class="line">    times=re.findall(<span class="string">"&lt;em&gt;(.*?)&lt;/em&gt;"</span>,html)   </span><br><span class="line">    print(<span class="string">"all time :"</span>+times[<span class="number">0</span>] +<span class="string">"    This month on line:"</span> +times[<span class="number">1</span>])</span><br><span class="line">    time.sleep(<span class="number">120</span>)</span><br></pre></td></tr></table></figure></p>
+<p>这样就可以达到2分钟访问一次个人主页的效果，并且把登录时间显示出来。</p>
+<p>2，t00ls获取土币的功能自动化：<br>可以看到，查询域名可以增加土币<br><img src="/img/20171120/1.png" alt="1"><br>来到查询页面：<a href="https://www.t00ls.net/domain.html" target="_blank" rel="noopener">https://www.t00ls.net/domain.html</a></p>
+<p><img src="/img/20171120/2.png" alt="2"></p>
+<p>点击查询，分析查询的数据：</p>
+<p><img src="/img/20171120/3.png" alt="3"></p>
+<p>查询的是别人没查询过的话就会查询成功在完成任务的列表中看到自己的用户名。<br><img src="/img/20171120/4.png" alt="4"></p>
+<p>然后就可以编写脚本了：<br>思路是这样的，随机读取我爬的域名，转换成为去了空格的列表，然后访问查询页面（post发包，数据中包含url）,<br>访问查询域名的地方查看是否完成今日任务，完成就输出用户名，searchok。失败的话递归再查询一遍，<br>为了避免cookie过期，用户名我从登陆的页面爬的，如果用户名不存在就结束程序<br>代码如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="comment">#coding:utf-8</span></span><br><span class="line"><span class="comment">#url1="www.123456.com"</span></span><br><span class="line">url2=<span class="string">"https://www.t00ls.net/domain.html"</span></span><br><span class="line">url3=<span class="string">"https://www.t00ls.net/checklogin.html"</span></span><br><span class="line"></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">"User-Agent"</span>: <span class="string">"Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0"</span>,</span><br><span class="line">    <span class="string">"Cookie"</span>:<span class="string">"自己cookie"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">search_url</span><span class="params">(urls_2)</span>:</span></span><br><span class="line">    url1=random.choice(urls_2)</span><br><span class="line">    <span class="keyword">print</span> (url1)</span><br><span class="line">    data=&#123;</span><br><span class="line">        <span class="string">"domain"</span>:url1,</span><br><span class="line">        <span class="string">"formhash"</span>:<span class="string">"d522de5b"</span>,</span><br><span class="line">        <span class="string">"querydomainsubmit"</span>:<span class="string">"查询"</span>    </span><br><span class="line">    &#125;</span><br><span class="line">    html=requests.post(url=url2,headers=headers,data=data).text</span><br><span class="line">    html1=requests.get(url=url2,headers=headers).text</span><br><span class="line">    html2=requests.get(url=url3,headers=headers).text</span><br><span class="line">    name1=re.findall(<span class="string">r'target="_blank"&gt;(.*?)&lt;/a&gt;'</span>,html2)   </span><br><span class="line">    MyName=name1[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">print</span> (MyName)</span><br><span class="line">    name=re.findall(<span class="string">r'target="_blank"&gt;(.*?)&lt;/a&gt;'</span>,html1)</span><br><span class="line">    <span class="comment">#print name</span></span><br><span class="line">    <span class="keyword">if</span> MyName <span class="keyword">in</span> name:</span><br><span class="line">        <span class="keyword">print</span> <span class="string">"search ok"</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        search_url(urls_2)</span><br><span class="line"></span><br><span class="line">urls=open(<span class="string">'ym.txt'</span>,<span class="string">'r'</span>)</span><br><span class="line">urls_2=[]</span><br><span class="line"><span class="keyword">for</span> url_1 <span class="keyword">in</span> urls:</span><br><span class="line">    url_1=url_1.strip(<span class="string">'\n'</span>)</span><br><span class="line">    urls_2.append(url_1)</span><br><span class="line">search_url(urls_2)</span><br></pre></td></tr></table></figure></p>
+<p>data中的”formhash”:”d522de5b” formhash要根据自己的浏览器进行获取。<br>从这个地方获取用户名<a href="https://www.t00ls.net/checklogin.html" target="_blank" rel="noopener">https://www.t00ls.net/checklogin.html</a><br><img src="/img/20171120/5.png" alt="5"></p>
+<p>查询结果如下，然后挂在服务器上面，每天执行就可以达到自动挂机刷土币了。<br><img src="/img/20171120/6.png" alt=""></p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="https://0archer.github.io">0Archer</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="https://0archer.github.io/2017/11/19/python实现t00ls的挂机脚本/">https://0archer.github.io/2017/11/19/python实现t00ls的挂机脚本/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/python/">python</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2017/11/19/搭建个人使用的xss平台/">
+        <span class="next-text nav-default">搭建个人使用的xss平台</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:1842229733@qq.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/0Archer" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2017
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">0Archer</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.6.0"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.6.0"></script>
+
+  </body>
+</html>
