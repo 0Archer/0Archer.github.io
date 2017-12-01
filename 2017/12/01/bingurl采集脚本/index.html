@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="bing url采集脚本的编写"/>
+
+
+
+
+  <meta name="keywords" content="网络安全, python, 0Archer" />
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="0Archer">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.6.0" />
+
+
+
+<link rel="canonical" href="https://0archer.github.io/2017/12/01/bingurl采集脚本/"/>
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6.0" />
+
+
+
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+    <title> bing url采集脚本的编写 - 0Archer </title>
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">0Archer</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            Home
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            Archives
+          
+        </li>
+      </a>
+    
+      <a href="/tags/index.html">
+        <li class="mobile-menu-item">
+          
+          
+            Tags
+          
+        </li>
+      </a>
+    
+      <a href="/fired/index.html">
+        <li class="mobile-menu-item">
+          
+          
+            友链
+          
+        </li>
+      </a>
+    
+      <a href="/about/index.html">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">0Archer</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              Home
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              Archives
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags/index.html">
+            
+            
+              Tags
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/fired/index.html">
+            
+            
+              友链
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about/index.html">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          bing url采集脚本的编写
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-12-01
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        <p>bing更新了国内版本和国际版本，所以重新写一下bing的url采集脚本。<br><a id="more"></a></p>
+<p>URL采集爬虫编写的前期准备，访问bing,找到查询的规则：<br>首先我先查询1，然后得到第一页的链接如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">https://cn.bing.com/search?q=1&amp;qs=n&amp;form=QBLH&amp;sp=-1&amp;pq=1&amp;sc=8-1&amp;sk=&amp;cvid=524238754E4B437A9AF2379BCBF1BE2F</span><br><span class="line"></span><br><span class="line">得到：</span><br><span class="line"></span><br><span class="line">https://cn.bing.com/search?q=查询的内容&amp;qs=n&amp;form=QBLH&amp;sp=-1&amp;pq=1&amp;sc=8-1&amp;sk=&amp;cvid=524238754E4B437A9AF2379BCBF1BE2F</span><br></pre></td></tr></table></figure></p>
+<p>接着访问第二个页面得到第二个页面的url：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">https://cn.bing.com/search?q=1&amp;qs=n&amp;sp=-1&amp;pq=1&amp;sc=8-1&amp;sk=&amp;cvid=524238754E4B437A9AF2379BCBF1BE2F&amp;first=10&amp;FORM=PERE</span><br><span class="line"></span><br><span class="line">得到查询的页码控制：</span><br><span class="line">https://cn.bing.com/search?q=1&amp;qs=n&amp;sp=-1&amp;pq=1&amp;sc=8-1&amp;sk=&amp;cvid=524238754E4B437A9AF2379BCBF1BE2F&amp;first=页码的地方&amp;FORM=PERE</span><br><span class="line"></span><br><span class="line">访问第三个页面：</span><br><span class="line"></span><br><span class="line">https://cn.bing.com/search?q=1&amp;qs=n&amp;sp=-1&amp;pq=1&amp;sc=8-1&amp;sk=&amp;cvid=524238754E4B437A9AF2379BCBF1BE2F&amp;first=20&amp;FORM=PERE1</span><br></pre></td></tr></table></figure></p>
+<p>可以看到第一个页面没有first，第二个页面的first:10 第三个页面的：first:20,将第二个页面的参数改为00返回第一个页面<br>分析得到查询的内容所在的地方和页码的控制参数测试后后面那个0可以改为任意的数字；<br>接着可以简单的模拟访问网页：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url=<span class="string">"https://cn.bing.com/searchq=1&amp;qs=n&amp;sp=-1&amp;pq=1&amp;sc=8-1&amp;sk=&amp;cvid=524238754E4B437A9AF2379BCBF1BE2F&amp;first=20&amp;FORM=PERE1"</span></span><br><span class="line">html=requests.get(url).text</span><br><span class="line"><span class="keyword">print</span> (html)</span><br></pre></td></tr></table></figure></p>
+<p>接着将脚本划分为参数的自己输入，网页的访问，查询结果的提取，查询所得数据的保存几个部分<br>可以得到如下的批量查询文本中要查询内容的脚本：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gethtml</span><span class="params">(url,timeout=<span class="number">30</span>)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        htl = requests.get(url)</span><br><span class="line">        htl.encoding = <span class="string">'utf-8'</span></span><br><span class="line">        htl.raise_for_status()</span><br><span class="line">        <span class="keyword">return</span> htl.text  </span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>    </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">findUrl</span><span class="params">(ulist, html)</span>:</span></span><br><span class="line">    soup = BeautifulSoup(html, <span class="string">"html.parser"</span>)</span><br><span class="line">    <span class="keyword">for</span> u <span class="keyword">in</span> soup.find_all(<span class="string">'cite'</span>):</span><br><span class="line">        <span class="keyword">print</span> (u.text)</span><br><span class="line">        ulist.append(u.text)   </span><br><span class="line">    <span class="keyword">return</span> ulist   </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">save</span><span class="params">(ulist)</span>:</span></span><br><span class="line">    </span><br><span class="line">    obuff = []</span><br><span class="line">    <span class="keyword">for</span> ln <span class="keyword">in</span> ulist:</span><br><span class="line">        <span class="keyword">if</span> ln <span class="keyword">in</span> obuff:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        obuff.append(ln)</span><br><span class="line">        </span><br><span class="line">    f=open(name+<span class="string">".txt"</span>,<span class="string">'a'</span>)</span><br><span class="line">    <span class="keyword">for</span> url <span class="keyword">in</span> obuff:</span><br><span class="line">        <span class="keyword">print</span> (url)</span><br><span class="line">        f.write(url)</span><br><span class="line">        f.write(<span class="string">"\n"</span>)</span><br><span class="line">    f.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">search</span><span class="params">(keyword)</span>:</span></span><br><span class="line">    <span class="comment">#keyword = input("what:") </span></span><br><span class="line">    s_url = <span class="string">"http://cn.bing.com/search?q="</span> </span><br><span class="line">    ulist = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,num):</span><br><span class="line">        url =s_url+keyword + <span class="string">"&amp;qs=n&amp;scope=web&amp;sp=-1&amp;pq=test&amp;sc=8-4&amp;sk=&amp;cvid=227D2B7112204B8BBED6B1655CF2D923&amp;first="</span>+str(i)+<span class="string">"1&amp;FORM=PERE"</span>     </span><br><span class="line">        <span class="keyword">print</span> (url)</span><br><span class="line">        html = gethtml(url)</span><br><span class="line">        ulist=findUrl(ulist, html)</span><br><span class="line">        save(ulist)</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">with</span> open(<span class="string">"keyword.txt"</span>,<span class="string">'r'</span>) <span class="keyword">as</span> f:</span><br><span class="line">        ul = f.readlines()</span><br><span class="line">        print(len(ul))</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(len(ul)):</span><br><span class="line">            keyword=ul[i]</span><br><span class="line">            keyword=keyword.strip(<span class="string">'\n'</span>)</span><br><span class="line">            print(keyword)</span><br><span class="line">            search(keyword)    </span><br><span class="line">            </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    name = time.strftime(<span class="string">'%d%H%M%S'</span>,time.localtime(time.time()))</span><br><span class="line">    num = <span class="number">1</span>     </span><br><span class="line">    main()</span><br></pre></td></tr></table></figure></p>
+<p>将关键字放在keyword.txt中读取keyword.txt中的内容进行查询。</p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>Author: </span>
+      <a href="https://0archer.github.io">0Archer</a>
+    </p>
+    <p class="copyright-item">
+      <span>Link: </span>
+      <a href="https://0archer.github.io/2017/12/01/bingurl采集脚本/">https://0archer.github.io/2017/12/01/bingurl采集脚本/</a>
+    </p>
+    <p class="copyright-item">
+      <span>License: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/网络安全/">网络安全</a>
+            
+              <a href="/tags/python/">python</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2017/11/22/crontab定时任务/">
+        <span class="next-text nav-default">crontab定时任务</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:1842229733@qq.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/0Archer" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2017
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">0Archer</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.6.0"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.6.0"></script>
+
+  </body>
+</html>
