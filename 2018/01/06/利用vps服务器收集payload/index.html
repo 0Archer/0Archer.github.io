@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="利用vps服务器收集payload"/>
+
+
+
+
+  <meta name="keywords" content="linux, 网络安全, 0Archer" />
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="0Archer">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.6.0" />
+
+
+
+<link rel="canonical" href="https://0archer.github.io/2018/01/06/利用vps服务器收集payload/"/>
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6.0" />
+
+
+
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+    <title> 利用vps服务器收集payload - 0Archer </title>
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">0Archer</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags/index.html">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/fired/index.html">
+        <li class="mobile-menu-item">
+          
+          
+            友链
+          
+        </li>
+      </a>
+    
+      <a href="/about/index.html">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">0Archer</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags/index.html">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/fired/index.html">
+            
+            
+              友链
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about/index.html">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          利用vps服务器收集payload
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-01-06
+        </span>
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        <pre><code>这个哥们到底想干啥！被吓到的我决定作为被攻击者窥视一下攻击者。
+</code></pre><a id="more"></a>
+<p><img src="/img/2018106/1.png" alt="0"></p>
+<p>​    首先前面搭建了一个个人使用的xss平台，然后服务器昨天收到了莫名其妙的xss收信，一脸懵逼的我决定看看到底是谁。</p>
+<p>看到众多的访问者，我也恶作剧了一下。</p>
+<p>​     1，信息的收集，收集访问者的ip和时间和一些攻击载荷，开始计划，如果出现登录页面，攻击者会不会爆破呢，那么我们先来收集一波他们的爆破字典：</p>
+<p>首先直接去网上下载了一个登录页面：<a href="http://www.uimaker.com/uimakerdown/logindesign/127588.html" target="_blank" rel="noopener">http://www.uimaker.com</a>我试去这个网站随便下载了一个这个感觉还不错，不开启验证码降低一点攻击难度这样攻击者才会上钩，网站title也可以改一个吸引别人一点的</p>
+<p><img src="/img/2018106/2.png" alt="1"></p>
+<p>然后把这个页面改一下，改成index.php，把Screw以前发给我的PHP改了一下，用来记录访问者的IP，时间，爆破所使用的用户名，密码。</p>
+<p>html部分改了一下post数据发送到的页面：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;form id=&quot;Login&quot; name=&quot;Login&quot; method=&quot;post&quot; onsubmit=&quot;&quot; action=&quot;index.php&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>php记录的部分：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"><span class="comment">//user字典</span></span><br><span class="line">$name=$_POST[<span class="string">'UserName'</span>];</span><br><span class="line">$fp=fopen(<span class="string">'sdfsdafsadfdsafdsaf.txt'</span>,<span class="string">'a'</span>);</span><br><span class="line">fwrite($fp,$name.<span class="string">"\n"</span>);</span><br><span class="line">fclose($fp);</span><br><span class="line"><span class="comment">//pass字典</span></span><br><span class="line">$password=$_POST[<span class="string">'password'</span>];</span><br><span class="line">$pwd=fopen(<span class="string">'sdfsdafdsafsdafsdafdsaf.txt'</span>,<span class="string">'a'</span>);</span><br><span class="line">fwrite($pwd,$password.<span class="string">"\n"</span>);</span><br><span class="line">fclose($fp);</span><br><span class="line"><span class="comment">//总的</span></span><br><span class="line">$ip = $_SERVER[<span class="string">"REMOTE_ADDR"</span>];</span><br><span class="line">$time = date(<span class="string">'y-m-d h:i:s'</span>,time());</span><br><span class="line">$fp=fopen(<span class="string">'dfsafdsafdsafsdafsdafsadfsdf.txt'</span>,<span class="string">'a'</span>);</span><br><span class="line"></span><br><span class="line">fwrite($fp,<span class="string">"ip :"</span>.$ip.<span class="string">"\tname:"</span>.$name.<span class="string">"\tpass:"</span>.$password.<span class="string">"\ttime:"</span>.$time.<span class="string">"\n"</span>);</span><br><span class="line">fclose($fp);</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>然后这样就可以把post过来的username放到sdfsdafsadfdsafdsaf.txt这个文件中，密码同理，访问者的信息也一样。然后把这个index.php放到vps服务器的首页，坐等收集爆破的用户名和密码就可以了。</p>
+<p>​    Screw表哥说了一下要不再收集一下payload，然后这些东西应该都在日志中能找到吧，所以去vps的apache日志，日志文件默认在/var/log/apache2目录下，然后查看了一下我要的东西在：access.log.1     这个日志文件中。</p>
+<p><img src="/img/2018106/3.png" alt="3"></p>
+<p>这个结果正则匹配一下就可以得到想要的东西了。</p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="https://0archer.github.io">0Archer</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="https://0archer.github.io/2018/01/06/利用vps服务器收集payload/">https://0archer.github.io/2018/01/06/利用vps服务器收集payload/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/linux/">linux</a>
+            
+              <a href="/tags/网络安全/">网络安全</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2018/01/04/用Python爬取可能存在st2漏洞的链接/">
+        <span class="next-text nav-default">用Python爬取可能存在st2漏洞的链接</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:1842229733@qq.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/0Archer" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2018
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">0Archer</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.6.0"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.6.0"></script>
+
+  </body>
+</html>
